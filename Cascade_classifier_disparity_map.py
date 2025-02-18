@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 
@@ -108,8 +110,10 @@ class CascadeClassifier:
 
 
 classifier = CascadeClassifier('pictures/opencv_frameL_0.png', 'pictures/opencv_frameR_0.png', 380, 0.16,
-                               1.1, 3, 30, 0.3)
+                               1.1, 3, 10, 0.3)
+start = time.time()
 classifier.load_image()
 classifier.detect_apples()
 classifier.match_apples()
+print(time.time()-start)
 classifier.display_images()
