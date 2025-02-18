@@ -3,12 +3,11 @@ import numpy as np
 
 
 class DistanceMeasurement:
-    def __init__(self, CamL_id, CamR_id, Img_source, ScaleFactor, minNeighbors, baseline, correction):
+    def __init__(self, CamL_id, CamR_id, ScaleFactor, minNeighbors, baseline, correction):
         self.scaleFactor = ScaleFactor
         self.minNeighbors = minNeighbors
         self.CamL_id = CamL_id
         self.CamR_id = CamR_id
-        self.Img_source = Img_source
         self.baseline = baseline
         self.correction = correction
 
@@ -23,7 +22,7 @@ class DistanceMeasurement:
         print("disparity", disparity)
         if disparity == 0:
             return None
-        Z = ((self.focal_length / self.pixel_size) * (self.baseline / (disparity*self.correction)))
+        Z = ((self.focal_length / self.pixel_size) * (self.baseline / (disparity * self.correction)))
         return Z
 
     def video_capture(self):
