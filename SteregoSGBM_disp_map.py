@@ -3,6 +3,7 @@ import os
 import time
 
 import cv2
+import numpy as np
 from matplotlib import pyplot as plt
 
 
@@ -95,38 +96,54 @@ class DisparityMap:
         # show disparity map
 
     def save_figure(self):
+        '''shows and saves figure with a grayscale scale bar'''
 
-        plt.figure(figsize=(10, 5))
-        plt.imshow(self.disparity_cropped, cmap='gray', aspect='auto')
-        plt.axis("off")
+        min_disp, max_disp = 0, 3500
+        new_min, new_max = 0, 640
+
+        disparity_scaled = np.interp(self.disparity_cropped, (min_disp, max_disp), (new_min, new_max))
+
+        fig, ax = plt.subplots(figsize=(10, 5))
+        img = ax.imshow(disparity_scaled, cmap='gray', aspect='auto', vmin=new_min, vmax=new_max)
+        ax.axis("off")
+
+        cbar = plt.colorbar(img, ax=ax, fraction=0.046, pad=0.02)
+        cbar.set_label("Dysparycja")
+
+        ticks = np.arange(new_min, new_max + 1, 160)
+        cbar.set_ticks(ticks)
+        cbar.set_ticklabels([f"{int(tick)}" for tick in ticks])
+
         plt.tight_layout()
         plt.show()
+
         path = os.path.join(os.getcwd(), 'result')
         if not os.path.exists(path):
             os.makedirs(path)
+
         existing_files = [f for f in os.listdir(path) if f.startswith("result") and f.endswith(".png")]
         index = len(existing_files)
 
         save_path = os.path.join(path, f"result{index}.png")
         settings_save_path = os.path.join(path, f"result{index}.txt")
-        if self.disparity_cropped is not None:
-            plt.imsave(save_path, self.disparity_cropped, cmap='gray')
-            print(f"Saved: {save_path}")
 
-            with open(settings_save_path, "w") as f:
-                f.write(f"numDisparities: {self.numDisparities}\n")
-                f.write(f"blockSize: {self.blockSize}\n")
-                f.write(f"preFilterType: {self.P1}\n")
-                f.write(f"preFilterSize: {self.P2}\n")
-                f.write(f"preFilterCap: {self.preFilterCap}\n")
-                f.write(f"textureThreshold: {self.textureThreshold}\n")
-                f.write(f"uniquenessR: {self.uniquenessR}\n")
-                f.write(f"speckleRange: {self.speckleRange}\n")
-                f.write(f"speckleWindowSize: {self.speckleWindowSize}\n")
+        fig.savefig(save_path, bbox_inches='tight', dpi=300)
+        print(f"Saved: {save_path}")
 
-            print(f"Saved parameters: {settings_save_path}")
-        else:
-            raise ValueError("Use stereoSGBMCreate().")
+        with open(settings_save_path, "w") as f:
+            f.write(f"numDisparities: {self.numDisparities}\n")
+            f.write(f"blockSize: {self.blockSize}\n")
+            f.write(f"P1: {self.P1}\n")
+            f.write(f"P2: {self.P2}\n")
+            f.write(f"preFilterCap: {self.preFilterCap}\n")
+            f.write(f"textureThreshold: {self.textureThreshold}\n")
+            f.write(f"uniquenessR: {self.uniquenessR}\n")
+            f.write(f"speckleRange: {self.speckleRange}\n")
+            f.write(f"speckleWindowSize: {self.speckleWindowSize}\n")
+            f.write(f"disp12MaxDiff: {self.disp12MaxDiff}\n")
+            f.write(f"minDisparity: {self.minDisparity}\n")
+
+        print(f"Saved parameters: {settings_save_path}")
 
 
 disparity_map = DisparityMap(

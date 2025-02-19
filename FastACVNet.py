@@ -76,10 +76,39 @@ class FastACVNet():
 
     def draw_disparity(self):
         disparity_map = cv2.resize(self.disparity_map, (self.img_width, self.img_height))
+
         norm_disparity_map = 255 * ((disparity_map - np.min(disparity_map)) /
                                     (np.max(disparity_map) - np.min(disparity_map)))
+        norm_disparity_map = cv2.convertScaleAbs(norm_disparity_map, 1)
 
-        return cv2.applyColorMap(cv2.convertScaleAbs(norm_disparity_map, 1), cv2.COLORMAP_MAGMA)
+        color_disp = cv2.applyColorMap(norm_disparity_map, cv2.COLORMAP_MAGMA)
+
+        scale_width = 50
+        scale_height = self.img_height
+
+        gradient = np.linspace(255, 0, scale_height).astype(np.uint8)
+        gradient = np.tile(gradient[:, None], (1, scale_width))
+
+        color_scale = cv2.applyColorMap(gradient, cv2.COLORMAP_MAGMA)
+
+        min_disp = np.min(disparity_map)
+        max_disp = np.max(disparity_map)
+        mid_disp = (min_disp + max_disp) / 2.0
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.5
+        thickness = 1
+        text_color = (255, 255, 255)
+
+        cv2.putText(color_scale, f"{640:.2f}", (5, 20), font, font_scale, text_color, thickness, cv2.LINE_AA)
+        cv2.putText(color_scale, f"{320:.2f}", (5, scale_height // 2), font, font_scale, text_color, thickness,
+                    cv2.LINE_AA)
+        cv2.putText(color_scale, f"{0:.2f}", (5, scale_height - 10), font, font_scale, text_color, thickness,
+                    cv2.LINE_AA)
+
+        combined = np.hstack((color_disp, color_scale))
+
+        return combined
 
     def draw_depth(self):
         if self.depth_map is None:
