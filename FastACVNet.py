@@ -13,7 +13,7 @@ class CameraConfig:
     f: float
 
 
-DEFAULT_CONFIG = CameraConfig(0.546, 120)  # rough estimate from the original calibration
+DEFAULT_CONFIG = CameraConfig(0.23, 4)  # rough estimate from the original calibration
 
 
 class FastACVNet():
@@ -153,8 +153,8 @@ if __name__ == '__main__':
     depth_estimator = FastACVNet(model_path)
 
     # Load images
-    left_img = cv2.imread('pictures/opencv_frameL_0.png')
-    right_img = cv2.imread('pictures/opencv_frameR_0.png')
+    left_img = cv2.imread('pictures/opencv_frameL_13.png')
+    right_img = cv2.imread('pictures/opencv_frameR_13.png')
 
     # Estimate depth and colorize it
     disparity_map = depth_estimator(left_img, right_img)

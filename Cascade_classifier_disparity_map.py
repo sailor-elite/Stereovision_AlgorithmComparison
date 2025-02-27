@@ -28,8 +28,11 @@ def calculate_distance(x_left, x_right, baseline, correction):
 
 
 class CascadeClassifier:
-    def __init__(self, ImgPathL, ImgPathR, MAX_X_SHIFT, baseline, scaleFactor=1.1, minNeighbors=12, window_size=12,
-                 Min_distance_threshold=0.2, ):
+    def __init__(self, ImgPathL, ImgPathR, distance_visible, MAX_X_SHIFT, baseline, scaleFactor=1.1, minNeighbors=12,
+                 window_size=12,
+                 Min_distance_threshold=0.2, Max_distance_threshold=0.6):
+        self.Max_distance_threshold = Max_distance_threshold
+        self.distance_visible = distance_visible
         self.baseline = baseline
         self.Min_distance_threshold = Min_distance_threshold
         self.ImgPathR = ImgPathL
@@ -97,11 +100,13 @@ class CascadeClassifier:
                 Z_distance = calculate_distance(x_CenterL, best_match[0], self.baseline, 1)
                 disp = calculate_disparity(x_CenterL, best_match[0])
                 print(Z_distance)
-                if Z_distance > self.Min_distance_threshold:
+                if (Z_distance > self.Min_distance_threshold) and (Z_distance < self.Max_distance_threshold):
                     cv2.rectangle(self.ImgL, (xL, yL), (xL + wL, yL + hL), get_gray_color(disp, 640), 8)
-                    cv2.putText(self.ImgL, str(round(Z_distance, 2)), (x_CenterL, y_CenterL), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.6,
-                                (255, 0, 0), 2)
+                    if self.distance_visible:
+                        cv2.putText(self.ImgL, str(round(Z_distance, 2)), (x_CenterL, y_CenterL),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.6,
+                                    (255, 0, 0), 2)
 
     def display_images(self):
         cv2.imshow('disparityMap', self.ImgL)
@@ -109,11 +114,3 @@ class CascadeClassifier:
         cv2.destroyAllWindows()
 
 
-classifier = CascadeClassifier('pictures/opencv_frameL_0.png', 'pictures/opencv_frameR_0.png', 380, 0.16,
-                               1.1, 3, 10, 0.3)
-start = time.time()
-classifier.load_image()
-classifier.detect_apples()
-classifier.match_apples()
-print(time.time()-start)
-classifier.display_images()

@@ -146,19 +146,4 @@ class DisparityMap:
         print(f"Saved parameters: {settings_save_path}")
 
 
-disparity_map = DisparityMap(
-    numDisparities=15 * 16, blockSize=1 * 5, P1=9, P2=12, preFilterCap=31,
-    textureThreshold=190, uniquenessR=1, speckleRange=100, speckleWindowSize=8,
-    disp12MaxDiff=12, minDisparity=0, mode=cv2.STEREO_SGBM_MODE_SGBM_3WAY,
-    pictureLeft="pictures/opencv_frameL_0.png",
-    pictureRight="pictures/opencv_frameR_0.png"
-)
 
-start = time.time()
-disparity_map.rectify_maps()
-disparity_map.read_image()
-disparity_map.image_rectification()
-disparity_map.stereoSGBMCreate()
-print(time.time() - start)
-
-disparity_map.save_figure()
