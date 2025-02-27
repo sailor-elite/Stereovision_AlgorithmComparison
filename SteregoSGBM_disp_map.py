@@ -93,7 +93,6 @@ class DisparityMap:
         disparity = stereo.compute(self.Left_nice, self.Right_nice)
         self.disparity_cropped = disparity[:, self.numDisparities:]
 
-        # show disparity map
 
     def save_figure(self):
         '''shows and saves figure with a grayscale scale bar'''
