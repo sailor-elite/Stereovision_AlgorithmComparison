@@ -3,8 +3,14 @@ import os
 import numpy as np
 import cv2
 
-video_capture_0 = cv2.VideoCapture(0)
-video_capture_1 = cv2.VideoCapture(1)
+
+#Parameters to change
+ID_camera_left = 0
+ID_camera_right = 1
+
+
+video_capture_0 = cv2.VideoCapture(ID_camera_left)
+video_capture_1 = cv2.VideoCapture(ID_camera_right)
 img_counter = 0
 path = os.path.join(os.getcwd(), 'pictures')
 path_positive = os.path.join(os.getcwd(), 'pictures/positive')
